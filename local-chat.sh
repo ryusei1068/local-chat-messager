@@ -3,8 +3,7 @@
 set -m
 
 # excute server side
-./server
-
+./server &
 bg %1
 sleep 3
 

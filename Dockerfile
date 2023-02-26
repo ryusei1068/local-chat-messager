@@ -18,7 +18,7 @@ FROM ryusei1068/rust_ubuntu:latest
 COPY --from=build /server/target/release/server ./
 COPY --from=build /client/target/release/client ./
 
-#COPY ./local-chat.sh ./
-#RUN chmod 755 local-chat.sh
-#
-#CMD ./local-chat.sh
+COPY ./local-chat.sh ./
+RUN chmod 755 local-chat.sh
+
+# CMD ./local-chat.sh
