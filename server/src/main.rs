@@ -1,20 +1,12 @@
 use std::fs;
-use std::io::{Read, Write};
-use std::os::unix::net::{UnixListener, UnixStream};
+use async_std::io::{WriteExt, ReadExt};
+use async_std::os::unix::net::UnixListener;
+use async_std::prelude::*;
 use std::path::Path;
-use std::thread;
+use async_std::task;
 
-fn handle_client(mut stream: UnixStream) -> std::io::Result<()> {
-    let mut message = String::new();
-    stream.read_to_string(&mut message)?;
+async fn run() -> std::io::Result<()> {
 
-    println!("We received this message: {}\nReplying...", message);
-    stream.write_all(b"hello client")?;
-
-    Ok(())
-}
-
-fn main() -> std::io::Result<()> {
     let socket_path = "/socket_file";
 
     let path = Path::new(&socket_path);
@@ -23,13 +15,24 @@ fn main() -> std::io::Result<()> {
         fs::remove_file(path).expect("File delete failed");
     }
 
-    let listener = UnixListener::bind(socket_path)?;
+    let listener = UnixListener::bind(socket_path).await?;
+    let mut incoming = listener.incoming();
 
-    loop {
-        let (mut unix_stream, socket_address) = listener.accept()?;
-        println!("connection from {:?}", socket_address);
-        thread::spawn(|| handle_client(unix_stream));
+    while let Some(stream) = incoming.next().await {
+        let mut stream = stream?;
+        println!("connection from {:?}", stream.local_addr().unwrap());
+
+        let mut message = String::new();
+        stream.read_to_string(&mut message).await?;
+
+        println!("We received this message: {}\nReplying...", message);
+        
+        stream.write_all(b"hello world").await?;
     }
 
     Ok(())
+}
+
+fn main() {
+    task::block_on(run());
 }
