@@ -34,5 +34,6 @@ async fn run() -> std::io::Result<()> {
 }
 
 fn main() {
-    task::block_on(run());
+    let result = task::block_on(run());
+    println!("{:?}", result);
 }
