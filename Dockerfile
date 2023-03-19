@@ -3,7 +3,7 @@ FROM ryusei1068/rust_ubuntu:latest as build
 # build for sever side 
 RUN USER=root cargo new --bin server
 WORKDIR /server
-COPY ./serverCargo* ./
+COPY ./server/Cargo* ./
 COPY ./server/src ./src
 RUN cargo build --release
 
