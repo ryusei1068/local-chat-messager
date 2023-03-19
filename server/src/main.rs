@@ -26,8 +26,8 @@ async fn run() -> std::io::Result<()> {
         stream.read_to_string(&mut message).await?;
 
         println!("We received this message: {}\nReplying...", message);
-        
-        stream.write_all(b"hello world").await?;
+
+        stream.write_all(b"Hello client").await?;
     }
 
     Ok(())
