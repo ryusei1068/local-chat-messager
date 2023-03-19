@@ -9,13 +9,12 @@ fn handle_client(mut stream: UnixStream) -> std::io::Result<()> {
     stream.read_to_string(&mut message)?;
 
     println!("We received this message: {}\nReplying...", message);
-    stream.write(b"hello client")?;
+    stream.write_all(b"hello client")?;
 
     Ok(())
 }
 
 fn main() -> std::io::Result<()> {
-    println!("hello server");
     let socket_path = "/socket_file";
 
     let path = Path::new(&socket_path);
