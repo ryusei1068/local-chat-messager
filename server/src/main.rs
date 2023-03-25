@@ -4,6 +4,10 @@ use async_std::os::unix::net::UnixListener;
 use async_std::prelude::*;
 use std::path::Path;
 use async_std::task;
+use fake::faker::name::raw::*;
+use fake::locales::*;
+use fake::Fake;
+
 
 async fn run() -> std::io::Result<()> {
 
@@ -26,8 +30,13 @@ async fn run() -> std::io::Result<()> {
         stream.read_to_string(&mut message).await?;
 
         println!("We received this message: {}\nReplying...", message);
-
-        stream.write_all(b"Hello client").await?;
+        
+        let name: String = Name(EN).fake(); 
+        let mut greeting: String = "Hello, ".to_string();
+        greeting.push_str(&name);
+        let buf: &[u8] = greeting.as_str().as_bytes();
+        
+        stream.write_all(buf).await?;
     }
 
     Ok(())
